@@ -1,0 +1,69 @@
+/*
+Youtube.com/LeimanGoVlog
+Tokopedia.com/tridipiproject
+saweria.co/leimangovlog
+instagram/tridipi.project
+github.com/leiman07
+leimanilmu.blogspot.com
+*/
+//Penggaris digital dengan sensor Ultrasonik dan LCD OLED 128x64
+
+//-------------------librarry untuk OLED 128x64------------------------------
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+//----------------------------------------------------------------------------
+
+//-----------Variabel PIN------
+int trig_pin = D5;    
+int echo_pin = D6;
+long durasi, jarak;
+//-----------------------------
+
+ 
+void setup() {
+  Serial.begin(115200); // Untuk komunikasi serial
+  
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Alamat I2C LCD OLED
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }  
+  pinMode(trig_pin, OUTPUT);    // set pin menjadi output
+  pinMode(echo_pin, INPUT);     // set pin input
+  digitalWrite(trig_pin, LOW);
+  
+}
+ 
+void loop() {
+  
+  digitalWrite(trig_pin, LOW);
+  delayMicroseconds(8);
+  digitalWrite(trig_pin, HIGH);
+  delayMicroseconds(8);
+  digitalWrite(trig_pin, LOW);
+  delayMicroseconds(8);
+
+  durasi = pulseIn(echo_pin, HIGH); // Penerimaan suara ultrasonic
+  jarak = (durasi / 2) / 29.1;      // Pengubahan durasi menjadi jarak (CM)
+  Serial.println(jarak);            // Menampilkan jarak di Serial Monitor
+ 
+  //-------menampilkan jarak di LCD OLED-------------------  
+  display.clearDisplay();
+  display.setTextSize(2); // Draw 2X-scale text
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(24, 24);
+  display.print(jarak);
+  display.println(" CM");
+  display.display();
+  delay(500); //waktu untuk refresh data jarak
+  //-------menampilkan jarak di LCD OLED------------------- 
+}
+
+//PROJECT : Program Penggaris digital dengan sensor Ultrasonik dan LCD OLED 128x64
+//DIBUAT  : TRIDIPI.PROJECT
+//TANGGAL : 07/12/2021
